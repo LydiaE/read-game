@@ -46,6 +46,7 @@ var player;
 var platforms;
 var cursors;
 var collectibles;
+var book;
 var hero;
 var love;
 var dream;
@@ -62,6 +63,8 @@ var timerText;
 var music;
 var button;
 var stateText;
+var pauseKey;
+var readKey;
 
 
 function create() 
@@ -197,6 +200,17 @@ function create()
     friend = game.add.sprite(1790, game.world.height - 355, 'friend');
     friend.scale.x = 0.5;
     friend.scale.y = 0.5;
+    
+    //Creating an enemy to fight
+    book = game.add.sprite (2000, game.world.height - 400, 'enemy');
+    book.scale.x = 1;
+    book.scale.y = 1;
+    
+    game.physics.arcade.enable(book);
+    book.body.gravity.y = 150;
+    book.body.collideWorldBounds = true;
+    
+    book.animations.add('flip', [0, 1, 2,], 4, true);
 
     // The player and its settings
     player = game.add.sprite(32, game.world.height - 150, 'eyeball');
@@ -215,7 +229,7 @@ function create()
     player.body.gravity.y = 300; //higher number is like heavier gravity they will fall harder//
     player.body.collideWorldBounds = true;//means they don't run off of the ends of the screen on left right top or bottom or world if we had a bigger screen w/ a camera//
 
-    //  Our two animations, walking left and right.
+    // PLAYER ANIMATIONS
     player.animations.add('walk', [42, 43, 44, 45, 46, 47, 48, 49], 12, true);//true means whether the animation loops or not in this case. the array of numbers is the frame order in the sprite sheet. this sprite sheet is 0->8 left to right//
     player.animations.add('jump', [0, 1, 2, 3], 8, false);
     player.animations.add('jumpleft', [4, 5, 6, 7, 8], 12, true);
@@ -224,6 +238,7 @@ function create()
     player.animations.add('idle', [22, 23, 24, 25, 26, 25, 24, 23, 22, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 36, 35, 34, 33], 12, true);
     player.animations.add('read', [0, 50, 51, 52, 53, 54, 55, 56, 57, 52], 12, true);
     
+    //BOUNCY ITEM ANIMATIONS
     hero.animations.add('bounce', [0,1,2,3,4,5], 5, true);
     love.animations.add('bounce', [0,1,2,3,4,5], 5, true);
     home.animations.add('bounce', [0,1,2,3,4,5], 5, true);
@@ -236,6 +251,13 @@ function create()
     talk.animations.add('bounce', [0,1,2,3,4,5], 5, true);
     
     cursors = game.input.keyboard.createCursorKeys();//We created the cursors object, which means the player can be controlled with keyboard input.//
+
+    //Key input for pause, and event handler so that when it is paused, it can be unpaused.//
+    pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    pauseKey.onDown.add(togglePause,this);
+
+    readKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
+    readKey.onDown.add(readBook,this);
 
     collectibles = game.add.group();//Let's see if doing the same for collectibles will let them be picked up.//
     collectibles.enableBody = true;
@@ -268,7 +290,7 @@ function create()
     timerText = game.add.text(450, 16, 'GOOD NIGHT IN: 300', { fontSize: '32px', fill: '#FFFFFF' });//POINTS, x,y is 16,16, then default score and then size and hex color//
     timerText.fixedToCamera = true;
     
-    stateText = game.add.text(300, -300, 'Good night! I hope you have pleasant dreams.', { fontSize: '12px Arial', fill: '#ffffff' });
+    stateText = game.add.text(400, 300, 'Good night! I hope you have pleasant dreams.', { fontSize: '12px Arial', fill: '#ffffff' });
     stateText.anchor.setTo(0.5, 0.5);
     stateText.visible = false;
     stateText.fixedToCamera = true;
@@ -276,7 +298,7 @@ function create()
     //Creating a button to let players turn the music down is only polite.//
     button = game.add.button(725, 5, 'button', actionOnClick, this, 2, 1, 0);
     button.fixedToCamera = true;
-    
+
 }
 
 function update() {
@@ -360,6 +382,8 @@ function update() {
         player.body.velocity.y = -400;//Height of jump arc. negative means up and positive means down on the y axis. Number is magnitude of the jump.//
     }
 
+    
+
     game.physics.arcade.overlap(player, collectibles, collectItem, null, this);
 
     //****COLLECTIBLES!!!****//
@@ -397,6 +421,16 @@ function collectItem (player, collectible)
     scoreText.text = 'WORDS COLLECTED: ' + score + '/10';//Displays a string reading: [Text]: [Value of the score]//
 }
 
+function readBook (player,enemy)
+{
+    //Defeats the enemy and helps you want to sleep!
+    player.animations.play('read');
+    book.animations.play('flip');
+    book.kill();
+    score += 5;
+    scoreText.text = 'WORDS COLLECTED: ' + score + '/10';
+}
+
 function updateCounter() 
 {
 
@@ -413,6 +447,11 @@ function updateCounter()
     }
 }
 
+function togglePause()
+{
+    game.paused = !game.paused;
+}
+
 //We need to add a way for the player to end the level without running out the timer as well//
 
 function levelEnd()
@@ -427,7 +466,7 @@ function levelEnd()
     }
 
 
-    if (scoreText >99)
+    if (scoreText >9)
     {
 //This will be where we put the score-dependent endings and stuff//    
     }
@@ -439,7 +478,7 @@ function levelEnd()
 
 function actionOnClick()
     {
-        music.mute =! music.mute;
+        music.mute = !music.mute;
 }
 
 
