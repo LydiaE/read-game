@@ -2,7 +2,7 @@
 <html lang="en"> 
 <head> 
 	<meta charset="UTF-8" />
-	<title>Phaser - Making your first game, part 1</title>
+	<title>Read: the Game</title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
     <style type="text/css">
         body {
@@ -85,9 +85,6 @@ function create()
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;//Makes the platforms have a 'body' so collisions happen//
     
-    collectibles = game.add.group();//Let's see if doing the same for collectibles will let them be picked up.//
-    collectibles.enableBody = true;
-
      //Back to platforms//
     for (var i = 0; i < 17; i++)
     {
@@ -104,61 +101,61 @@ function create()
     ledge = platforms.create(-150, 800, 'platyellow');//This does start the x value of the object off of the screen to the left (b/c 0 is the far left of the screen.) More than 5000 would be past the end on the right.//
     ledge.body.immovable = true;
 
-    ledge = platforms.create(4480, 649, 'platyellow');
+    ledge = platforms.create(450, 800, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(4207, 853, 'platyellow');
+    ledge = platforms.create(1050, 800, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(4066, 422, 'platyellow');
+    ledge = platforms.create(1650, 800, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2456, 413, 'platyellow');
+    ledge = platforms.create(2250, 800, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2003, 496, 'platyellow');
+    ledge = platforms.create(2850, 800, 'platyellow');
     ledge.body.immovable = true;
 
-    ledge = platforms.create(1930, 819, 'platyellow');
+    ledge = platforms.create(3450, 800, 'platyellow');
     ledge.body.immovable = true;
 
-    ledge = platforms.create(2500, 682, 'platred');
+    ledge = platforms.create(4050, 950, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(3300, 847, 'platred');
+    ledge = platforms.create(4650, 950, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(600, 777, 'platred');
+    ledge = platforms.create(900, 950, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(3900, 753, 'platred');
+    ledge = platforms.create(1900, 950, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(1240, 510, 'platred');
+    ledge = platforms.create(2400, 950, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2000, 660, 'platred');
+    ledge = platforms.create(3400, 950, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2140, 658, 'platpurple');
+    ledge = platforms.create(0, 600, 'platpurple');
     ledge.body.immovable = true;    
 
-    ledge = platforms.create(2230, 686, 'platpurple');
+    ledge = platforms.create(700, 600, 'platpurple');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2320, 634, 'platpurple');
+    ledge = platforms.create(1400, 600, 'platpurple');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2410, 560, 'platpurple');
+    ledge = platforms.create(2100, 600, 'platpurple');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2500, 479, 'platpurple');
+    ledge = platforms.create(2800, 600, 'platpurple');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2630, 812, 'platpurple');
+    ledge = platforms.create(3500, 600, 'platpurple');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(1830, 643, 'platpurple');
+    ledge = platforms.create(4200, 600, 'platpurple');
     ledge.body.immovable = true;    
 
     hero = game.add.sprite(400, game.world.height - 291, 'hero');
@@ -211,7 +208,6 @@ function create()
 
     //  We need to enable physics on the player
     game.physics.arcade.enable(player); //same kind of physics as on platform (don't want player to fall thru things and stuff)//
-    game.physics.arcade.enable(hero);
 
     player.body.setSize(100, 180);//Width then height 
 
@@ -241,11 +237,20 @@ function create()
     
     cursors = game.input.keyboard.createCursorKeys();//We created the cursors object, which means the player can be controlled with keyboard input.//
 
-    //  Finally some stars to collect
-    collectibles = game.add.group();
-
-    //  We will enable physics for any star that is created in this group
+    collectibles = game.add.group();//Let's see if doing the same for collectibles will let them be picked up.//
     collectibles.enableBody = true;
+
+    //This will add the sprites of the collecibles to the collectible group//
+    collectibles.add(hero);
+    collectibles.add(dream);
+    collectibles.add(home);
+    collectibles.add(fight);
+    collectibles.add(friend);
+    collectibles.add(explore);
+    collectibles.add(villain);
+    collectibles.add(love);
+    collectibles.add(talk);
+    collectibles.add(war);
 
     //  Create our Timer
     timer = game.time.create(false);
@@ -356,16 +361,6 @@ function update() {
     }
 
     game.physics.arcade.overlap(player, collectibles, collectItem, null, this);
-    game.physics.arcade.overlap(player, home, collectItem, null, this);
-    game.physics.arcade.overlap(player, talk, collectItem, null, this);
-    game.physics.arcade.overlap(player, love, collectItem, null, this);
-    game.physics.arcade.overlap(player, war, collectItem, null, this);
-    game.physics.arcade.overlap(player, friend, collectItem, null, this);
-    game.physics.arcade.overlap(player, fight, collectItem, null, this);
-    game.physics.arcade.overlap(player, villain, collectItem, null, this);
-    game.physics.arcade.overlap(player, explore, collectItem, null, this);
-    game.physics.arcade.overlap(player, dream, collectItem, null, this);
-                                
 
     //****COLLECTIBLES!!!****//
     hero.animations.play('bounce');
@@ -385,9 +380,9 @@ function update() {
 function render () 
 {
     //DEBUGGING - COMMENT IN TO USE//
-     game.debug.text(game.time.physicsElapsed, 32, 32);
-     game.debug.body(player);
-     game.debug.bodyInfo(player, 16, 24);
+    //  game.debug.text(game.time.physicsElapsed, 32, 32);
+    //  game.debug.body(player);
+    //  game.debug.bodyInfo(player, 16, 24);
 
 }
 
@@ -409,7 +404,7 @@ function updateCounter()
     timerText.text = 'GOODNIGHT IN: ' + total;
     if (total < 1)
     {
-    timerText.text = 'GOODNIGHT!'
+    timerText.text = 'GOODNIGHT!';
     stateText.visible = true;
     }
     else
