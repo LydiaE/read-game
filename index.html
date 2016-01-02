@@ -98,111 +98,90 @@ function create()
     //  Now let's place the level's design and the collectibles below//
     //Notes about placement for platforms: Nothing CLOSER to y = 0 (ceiling) than 400 because of height of jump arc. Nothing FURTHER from y = 0 than about 950, it's too close to the floor.//
     //Fix placement, this is currently wonky//
-        var ledge = platforms.create(400, 950, 'platred');//Create thing in platform group, set height and how far to the right from 0//
+        var ledge = platforms.create(325, 450, 'platred');//Create thing in platform group, set height and how far to the right from 0//
     ledge.body.immovable = true;
 
-    ledge = platforms.create(-150, 800, 'platyellow');//This does start the x value of the object off of the screen to the left (b/c 0 is the far left of the screen.) More than 5000 would be past the end on the right.//
+    ledge = platforms.create(0, 950, 'platyellow');//This does start the x value of the object off of the screen to the left (b/c 0 is the far left of the screen.) More than 5000 would be past the end on the right.//
     ledge.body.immovable = true;
 
-    ledge = platforms.create(450, 800, 'platyellow');
+    ledge = platforms.create(300, 950, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(1050, 800, 'platyellow');
+    ledge = platforms.create(630, 700, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(1650, 800, 'platyellow');
+    ledge = platforms.create(1210, 900, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2250, 800, 'platyellow');
-    ledge.body.immovable = true;
-    
-    ledge = platforms.create(2850, 800, 'platyellow');
+    ledge = platforms.create(1563, 700, 'platred');
     ledge.body.immovable = true;
 
-    ledge = platforms.create(3450, 800, 'platyellow');
+    ledge = platforms.create(2160, 1050, 'platyellow');
     ledge.body.immovable = true;
 
-    ledge = platforms.create(4050, 950, 'platred');
+    ledge = platforms.create(2490, 450, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(4650, 950, 'platred');
+    ledge = platforms.create(2719, 600, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(900, 950, 'platred');
+    ledge = platforms.create(2751, 850, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(1900, 950, 'platred');
+    ledge = platforms.create(3907, 500, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(2400, 950, 'platred');
+    ledge = platforms.create(4234, 750, 'platred');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(3400, 950, 'platred');
+    ledge = platforms.create(4576, 900, 'platyellow');
     ledge.body.immovable = true;
     
-    ledge = platforms.create(0, 600, 'platpurple');
+    ledge = platforms.create(4807, 900, 'platyellow');
     ledge.body.immovable = true;    
 
-    ledge = platforms.create(700, 600, 'platpurple');
-    ledge.body.immovable = true;
-    
-    ledge = platforms.create(1400, 600, 'platpurple');
-    ledge.body.immovable = true;
-    
-    ledge = platforms.create(2100, 600, 'platpurple');
-    ledge.body.immovable = true;
-    
-    ledge = platforms.create(2800, 600, 'platpurple');
-    ledge.body.immovable = true;
-    
-    ledge = platforms.create(3500, 600, 'platpurple');
-    ledge.body.immovable = true;
-    
-    ledge = platforms.create(4200, 600, 'platpurple');
-    ledge.body.immovable = true;    
-
-    hero = game.add.sprite(400, game.world.height - 291, 'hero');
+    hero = game.add.sprite(50, 850, 'hero');
     hero.scale.x = 0.5;
     hero.scale.y = 0.5;
 
-    love = game.add.sprite(1511, game.world.height - 825, 'love');
+    love = game.add.sprite(300, 50, 'dream');
     love.scale.x = 0.5;
     love.scale.y = 0.5;
     
-    dream = game.add.sprite(4354, game.world.height - 613, 'dream');
+    dream = game.add.sprite(1200, 400, 'love');
     dream.scale.x = 0.5;
     dream.scale.y = 0.5;
     
-    explore = game.add.sprite(2542, game.world.height - 825, 'explore');
+    explore = game.add.sprite(2100, 100, 'explore');
     explore.scale.x = 0.5;
     explore.scale.y = 0.5;
     
-    home = game.add.sprite(3403, game.world.height - 793, 'home');
+    home = game.add.sprite(2100, 650, 'home');
     home.scale.x = 0.5;
     home.scale.y = 0.5;
     
-    war = game.add.sprite(292, game.world.height - 247, 'war');
+    war = game.add.sprite(3300, 650, 'war');
     war.scale.x = 0.5;
     war.scale.y = 0.5;
     
-    fight = game.add.sprite(3796, game.world.height - 512, 'fight');
+    fight = game.add.sprite(3900, 550, 'talk');
     fight.scale.x = 0.5;
     fight.scale.y = 0.5;
     
-    villain = game.add.sprite(1136, game.world.height - 318, 'villain');
+    villain = game.add.sprite(4200, 150, 'villain');
     villain.scale.x = 0.5;
     villain.scale.y = 0.5;
 
-    talk = game.add.sprite(2734, game.world.height - 809, 'talk');
+    talk = game.add.sprite(4500,  450, 'fight');
     talk.scale.x = 0.5;
     talk.scale.y = 0.5;
     
-    friend = game.add.sprite(1790, game.world.height - 355, 'friend');
+    friend = game.add.sprite(3000, 200, 'friend');
     friend.scale.x = 0.5;
     friend.scale.y = 0.5;
     
     //Creating an enemy to fight
-    book = game.add.sprite (2000, game.world.height - 400, 'enemy');
+    book = game.add.sprite (300, game.world.height - 350, 'enemy');
     book.scale.x = 1;
     book.scale.y = 1;
     
