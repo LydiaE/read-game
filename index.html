@@ -14,34 +14,52 @@
 
 <script type="text/javascript">
 
-var game = new Phaser.Game(1280, 720, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 //Game is called outside of the functions and thus global, so can be called in EVERY function//
 
 function preload() {
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
-    game.load.spritesheet('person', 'assets/dude.png', 32, 48);
+    game.load.image('background', 'assets/background.png');
+    game.load.image('platyellow', 'assets/platform_yellow_small.png');
+    game.load.image('platpurple', 'assets/platform_purple_small.png');
+    game.load.image('platred',    'assets/platform_red_small.png');
+    game.load.spritesheet('hero',    'assets/hero_spritesheet.png', 200, 200);
+    game.load.spritesheet('love',    'assets/love_spritesheet.png', 200, 200);
+    game.load.spritesheet('dream',   'assets/dream_spritesheet.png', 200, 200);
+    game.load.spritesheet('explore', 'assets/explore_spritesheet.png', 200, 200);
+    game.load.spritesheet('fight',   'assets/fight_spritesheet.png', 200, 200);
+    game.load.spritesheet('friend',  'assets/friend_spritesheet.png', 200, 200);
+    game.load.spritesheet('home',    'assets/home_spritesheet.png', 200, 200);
+    game.load.spritesheet('war',     'assets/war_spritesheet.png', 200, 200);
+    game.load.spritesheet('villain', 'assets/villain_spritesheet.png', 200, 200);
+    game.load.spritesheet('talk',    'assets/talk_spritesheet.png', 200, 200 );
+    game.load.spritesheet('eyeball', 'assets/sprite_sheet_maincharacter.png', 200, 200);
 }
 
+
+var timer;
+var total = 300;
 var player; //Why define here? b/c these variables will be called in multiple functions!//
 var platforms;
 var cursors;
-var stars;
+var collectibles;
+var hero;
 var score = 0;
 var scoreText;
-
+var timerText;
 
 
 function create() {
+    
+    //Make the world Larger than the actual canvas!//
+    game.world.setBounds(0, 0, 5000, 1200);
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);/*global Phaser*/
 
     //  A simple background for our game
-    var sky = game.add.sprite(0, 0, 'sky');//Animated backgrounds? Note: sprites can be scaled like objects in group can be, but only if you set a variable as the sprite first//
+    var sky = game.add.sprite(0, 0, 'background');//Animated backgrounds? Note: sprites can be scaled like objects in group can be, but only if you set a variable as the sprite first//
 
-    sky.scale.setTo(2, 2);
+    //sky.scale.setTo(1, 1);
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = game.add.group();
@@ -49,90 +67,148 @@ function create() {
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;//Makes the platforms have a 'body' so collisions happen//
 
-    // Here we create the ground.
-    var ground = platforms.create(0, game.world.height -64, 'ground');//Places ground at x,y of 0, (900 - 64), ground referring to platform that has been defined as ground//
+    for (var i = 0; i < 17; i++)
+    {
+        var ground = platforms.create(i * 300, game.world.height - 50, 'platpurple');
+        ground.body.immovable = true;
+    }
 
-    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    ground.scale.setTo(4, 2);//Increases scale by multiple of the numbers given (2x and 2y)//
-
-    //  This stops it from falling away when you jump on it
-    ground.body.immovable = true;//Meaning it has been set to physics type 'immovable' for its body, keeping it always at the coordinates given even if collided by other objects-specific to phaser, physics would make stuff float away on collision//
 
     //  Now let's create two ledges
-    var ledge = platforms.create(400, 400, 'ground');//Create thing in platform group, set height and how far to the right//
+    var ledge = platforms.create(400, 950, 'platred');//Create thing in platform group, set height and how far to the right//
     ledge.body.immovable = true;
 
-    ledge = platforms.create(-150, 250, 'ground');//This does start the x value of the object off of the screen to the left (b/c 0 is the far left of the screen.)//
+    ledge = platforms.create(-150, 800, 'platyellow');//This does start the x value of the object off of the screen to the left (b/c 0 is the far left of the screen.)//
     ledge.body.immovable = true;
 
         // The player and its settings
-    player = game.add.sprite(32, game.world.height - 150, 'person');
+    player = game.add.sprite(32, game.world.height - 150, 'eyeball');
+    player.anchor.setTo(0.5, 0.5);
+    player.scale.x = 0.5;
+    player.scale.y = 0.5;
+
+    game.camera.follow(player);
+    
+    hero = game.add.sprite(400, game.world.height - 400, 'hero');
+    hero.scale.x = 0.5;
+    hero.scale.y = 0.5;
 
     //  We need to enable physics on the player
     game.physics.arcade.enable(player); //same kind of physics as on platform (don't want player to fall thru things and stuff)//
+    game.physics.arcade.enable(hero);
+
+    player.body.setSize(100, 180);//Width then height then 
 
     //  Player physics properties. Give the little guy a slight bounce.
-    player.body.bounce.y = 0.2; //how much player bounces when they hit the floor//
     player.body.gravity.y = 300; //higher number is like heavier gravity they will fall harder//
     player.body.collideWorldBounds = true;//means they don't run off of the ends of the screen on left right top or bottom or world if we had a bigger screen w/ a camera//
 
     //  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3], 10, true);//true means whether the animation loops or not in this case. the array of numbers is the frame order in the sprite sheet. this sprite sheet is 0->8 left to right//
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.animations.add('walk', [42, 43, 44, 45, 46, 47, 48, 49], 12, true);//true means whether the animation loops or not in this case. the array of numbers is the frame order in the sprite sheet. this sprite sheet is 0->8 left to right//
+    player.animations.add('jump', [0, 1, 2, 3, 4], 8, true);
+    player.animations.add('jumpleft', [5, 6, 7, 8], 12, true);
+    player.animations.add('fall', [9, 10, 11, 10], 12, true);
+    player.animations.add('land', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 12, true);
+    player.animations.add('idle', [22, 23, 24, 25, 26, 25, 24, 23, 22, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 36, 35, 34, 33], 12, true);
+    player.animations.add('read', [0, 50, 51, 52, 53, 54, 55, 56, 57, 52], 12, true);
+    
+    hero.animations.add('bounce', [0,1,2,3,4,5], 5, true);
     
     cursors = game.input.keyboard.createCursorKeys();//We created the cursors object, which means the player can be controlled with keyboard input.//
 
     //  Finally some stars to collect
-    stars = game.add.group();
+    collectibles = game.add.group();
 
     //  We will enable physics for any star that is created in this group
-    stars.enableBody = true;
+    collectibles.enableBody = true;
 
-    //  Here we'll create 12 of them evenly spaced apart
-    for (var i = 0; i < 12; i++)//i++ means it adds one to the current value of i, but stops at 11 because it's less than 12 max as the cap value defined for i (meaning total 12 stars because 0-11)//
-    {
-        //  Create a star inside of the 'stars' group
-        var star = stars.create(i * 70, 0, 'star');//Star is the individual item, stars is the name of the group containing them all. These are the coordinates of i btw-- i*70 --> i spaces each star at location, 70 pixels apart. In this kind of game the location is always the same when level is loaded, not programmatic. 0 is the y coordinate.//
+    //  Create our Timer
+    timer = game.time.create(false);
+    //  Set a TimerEvent to occur after 1 seconds
+    timer.loop(1000, updateCounter, this);
+    //  Start the timer running - this is important!
+    //  It won't start automatically, allowing you to hook it to button events and the like.
+    timer.start();
 
-        //  Let gravity do its thing
-        star.body.gravity.y = 300;//Since the stars are affected by gravity, they fall in from the top of the screen
+    scoreText = game.add.text(16, 16, 'WORDS COLLECTED: 0/10', { fontSize: '32px', fill: '#FFFFFF' });//POINTS, x,y is 16,16, then default score and then size and hex color//
+    scoreText.fixedToCamera = true;
 
-        //  This just gives each star a slightly random bounce value
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;//Then the stars bounce at random values-- this is the only thing that currently would change from load to load, not as noticeable as the map changing, etc.//
-    }
-
-    scoreText = game.add.text(16, 16, 'STARS: 0', { fontSize: '32px', fill: '#000' });//POINTS, x,y is 16,16, then default score and then size and hex color//
+    timerText = game.add.text(450, 16, 'GOOD NIGHT IN: 300', { fontSize: '32px', fill: '#FFFFFF' });//POINTS, x,y is 16,16, then default score and then size and hex color//
+    timerText.fixedToCamera = true;
+    
 }
 
 function update() {
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);//Also collides w/ platforms, meaning they do not sink into the ground//
+    game.physics.arcade.collide(collectibles, platforms);//Also collides w/ platforms, meaning they do not sink into the ground//
 
       //  Reset the players velocity (movement)
     player.body.velocity.x = 0;//This means that when the character is receiving no input they have no velocity, ie, they are idle//
 
-    if (cursors.left.isDown)//if the left motion key is being held down, then the following is true//
+    if (cursors.left.isDown && player.body.velocity.y > -5 && player.body.velocity.y < 5)//if the left motion key is being held down, then the following is true//
     {
         //  Move to the left
         player.body.velocity.x = -150;//Movin' left at the speed of 150, that's the player's max running speed; question for later how do we handle character accelerate to max? Danny: some people will make a constant elsewhere and call the constant to the game, ie player's max velocity is blah (the constant) so it can be changed as needed by editing only one source. In this case the velocity would not be -150 but would be the name of the variable for player velocity. This way it can change dynamically based on player input. (But like double tap to dash, etc? later)//
 
-        player.animations.play('left');//<-- look! Animations! yaaay. But then so idle animations must be defined, every possible INPUT must have a corresponding ANIMATION or the animations would not play. //
+        player.animations.play('walk');
+    
+        player.scale.x = -0.5;
     }
-    else if (cursors.right.isDown)//Because of the way this code is written, for example, Crypt of the Necrodancer would be unviable b/c Left takes priority (IF first, THEN ElseIf, THEN Else) so functionality like pressing both keys at once would be fucked up//
+    else if (cursors.right.isDown && player.body.velocity.y > -5 && player.body.velocity.y < 5)//Because of the way this code is written, for example, Crypt of the Necrodancer would be unviable b/c Left takes priority (IF first, THEN ElseIf, THEN Else) so functionality like pressing both keys at once would be fucked up//
     {
         //  Move to the right
         player.body.velocity.x = 150;//Basically, this works but it's the least efficient way to accomplish natural motion, unless moving left as a priority over right and not moving is like a gameplay mechanic-- hierarchical issues are not going to work with this.//
 
-        player.animations.play('right');
+        player.animations.play('walk');
+        player.scale.x = 0.5;
     }
     else
     {
-        //  Stand still
-        player.animations.stop();//Their default here has no idle, but we could replace STOP with an idle animation. Animations are created in the CREATE function using sprite sheets but played in the UPDATE function-- this is specific to how Phaser does it.//
 
-        player.frame = 4;//This sets which frame to go to when they are not animating (the look at camera frame for this example) so that they don't stop on whatever frame they were at.//
+        if (player.body.velocity.y < -5)
+        {
+            
+            if (cursors.left.isDown)
+            {
+                player.body.velocity.x = -150;
+                player.animations.play('jumpleft');
+                player.scale.x = 0.5;
+            }
+            else if (cursors.right.isDown)
+            {
+                player.body.velocity.x = 150;
+                player.animations.play('jumpleft');
+                player.scale.x = -0.5;
+            }
+            else
+            {
+                player.animations.play('jumpleft');                
+            }
+            
+
+        }
+        else if(player.body.velocity.y > 5)
+        {
+            player.animations.play('fall');
+
+            if (cursors.left.isDown)
+            {
+                player.body.velocity.x = -150;
+                player.scale.x = -0.5;
+            }
+            else if (cursors.right.isDown)
+            {
+                player.body.velocity.x = 150;
+                player.scale.x = 0.5;
+            }
+        }
+        else 
+        {
+            player.animations.play('idle');
+        }
     }
+    
     
     //  Allow the player to jump if they are touching the ground.
     if (cursors.up.isDown && player.body.touching.down)//Meaning that when the up key is pressed down AND the player is touching something-- player cannot jump on air, it won't work. If remove everything after the && then infinite jumping would be possible.//
@@ -140,18 +216,40 @@ function update() {
         player.body.velocity.y = -400;//Height of jump arc. negative means up and positive means down on the y axis. Number is magnitude of the jump.//
     }
 
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    game.physics.arcade.overlap(player, hero, collectItem, null, this);
+
+    //****COLLECTIBLES!!!****//
+    hero.animations.play('bounce');
+
 
 }
 
-function collectStar (player, star) {
+function render () 
+{
+    //DEBUGGING - COMMENT IN TO USE//
+    // game.debug.text(game.time.physicsElapsed, 32, 32);
+    // game.debug.body(player);
+    // game.debug.bodyInfo(player, 16, 24);
+
+}
+
+function collectItem (player, collectible) 
+{
     
     // Removes the star from the screen
-    star.kill();
+    collectible.kill();
 
     //  Add and update the score
-    score += 10;
-    scoreText.text = 'STARZ: ' + score;//Displays a string reading: [Text]: [Value of the score]//
+    score += 1;
+    scoreText.text = 'WORDS COLLECTED: ' + score + '/10';//Displays a string reading: [Text]: [Value of the score]//
+}
+
+function updateCounter() 
+{
+
+    total--;
+    timerText.text = 'GOODNIGHT IN: ' + total;
+    //Need a call to end level at total = 0//
 }
 
 </script>
