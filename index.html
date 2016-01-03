@@ -22,8 +22,8 @@ function preload() {
     game.load.image('platyellow',    'assets/platform_yellow_small.png');
     game.load.image('platpurple',    'assets/platform_purple_small.png');
     game.load.image('platred',       'assets/platform_red_small.png');
-    game.load.image('onbutton',      'assets/button_on.png');
-    game.load.image('offbutton',     'assets/button_off.png');
+    game.load.image('platblue',      'assets/platform_blue_small.png');
+    game.load.spritesheet('button',  'assets/button_sprite.png', 50, 50);
     game.load.spritesheet('hero',    'assets/hero_spritesheet.png', 200, 200);
     game.load.spritesheet('love',    'assets/love_spritesheet.png', 200, 200);
     game.load.spritesheet('dream',   'assets/dream_spritesheet.png', 200, 200);
@@ -42,31 +42,33 @@ function preload() {
 }
 
 //VARIABLES//
-var timer;
-var total = 300;
-var player; 
-var platforms;
-var cursors;
-var collectibles;
 var book;
-var hero;
-var love;
+var button;
+var collectibles;
+var cursors;
+var enemies;
+var music;
+var pauseKey;
+var platforms;
+var player; 
+var readKey;
+var score = 0;
+var scoreText;
+var stateText;
+var timer;
+var timerText;
+var total = 300;
+
 var dream;
 var explore;
 var fight;
 var friend;
+var hero;
 var home;
-var war;
-var villain;
+var love;
 var talk;
-var score = 0;
-var scoreText;
-var timerText;
-var music;
-var button;
-var stateText;
-var pauseKey;
-var readKey;
+var villain;
+var war;
 
 
 function create() 
@@ -97,6 +99,8 @@ function create()
         ground.body.immovable = true;
     }
 
+
+   
     //  Now let's place the level's design and the collectibles below//
     //Notes about placement for platforms: Nothing CLOSER to y = 0 (ceiling) than 400 because of height of jump arc. Nothing FURTHER from y = 0 than about 950, it's too close to the floor.//
     //Fix placement, this is currently wonky//
@@ -142,6 +146,7 @@ function create()
     ledge = platforms.create(4807, 900, 'platyellow');
     ledge.body.immovable = true;    
 
+    //Collectibles created and placed here//
     hero = game.add.sprite(50, 850, 'hero');
     hero.scale.x = 0.5;
     hero.scale.y = 0.5;
@@ -182,10 +187,31 @@ function create()
     friend.scale.x = 0.5;
     friend.scale.y = 0.5;
     
-    //Creating an enemy to fight
-    book = game.add.sprite (300, game.world.height - 350, 'enemy');
+    //Enemies go here//
+    book = game.add.sprite (300, 350, 'enemy');
     book.scale.x = 0.5;
     book.scale.y = 0.5;
+    
+    enemies = game.add.group(); //Put the enemies in a group b/c they do not animate if they are not placed in a group.//
+    enemies.enableBody = true;
+    enemies.add(book);
+    
+    // book = game.add.sprite (1500, 1000, 'enemy'); //For some reason when these are commented in, none of the enemies are animated. Come back to this.//
+    // book.scale.x = 0.5;
+    // book.scale.y = 0.5;
+
+    // book = game.add.sprite (2400, 400, 'enemy');
+    // book.scale.x = 0.5;
+    // book.scale.y = 0.5;
+
+    // book = game.add.sprite (3000, 1000, 'enemy');
+    // book.scale.x = 0.5;
+    // book.scale.y = 0.5;
+
+    // book = game.add.sprite (4800, 850, 'enemy');
+    // book.scale.x = 0.5;
+    // book.scale.y = 0.5;
+
     
     game.physics.arcade.enable(book);
     book.body.gravity.y = 150;
@@ -193,6 +219,7 @@ function create()
     
     book.animations.add('flip', [19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 8, true);
     book.animations.add('walk', [25, 24, 23, 22, 21, 20], 8, true);
+    book.animations.add('idle', [25, 19, 18, 17, 16, 17, 18, 19], 8, true);
 
     // The player and its settings
     player = game.add.sprite(32, game.world.height - 150, 'eyeball');
@@ -278,7 +305,7 @@ function create()
     stateText.fixedToCamera = true;
 
     //Creating a button to let players turn the music down is only polite.//
-    button = game.add.button(725, 5, 'onbutton', actionOnClick, this, 2, 1, 0);
+    button = game.add.button(725, 5, 'button', actionOnClick, 1, 0, 1, 0);
     button.fixedToCamera = true;
 
 }
@@ -286,8 +313,8 @@ function create()
 function update() {
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(book, platforms);
-  
+    game.physics.arcade.collide(enemies, platforms);
+
 
       //  Reset the players velocity (movement)
     player.body.velocity.x = 0;//This means that when the character is receiving no input they have no velocity, ie, they are idle//
@@ -358,8 +385,10 @@ function update() {
         }
     }
     
+    
+    
     book.animations.play('walk');
-    book.body.velocity.x = -60;
+    book.body.velocity.x = -50;
     
     
     //  Allow the player to jump if they are touching the ground.
@@ -390,7 +419,7 @@ function update() {
     villain.animations.play('bounce');        
 
 
-}
+    }
 
 function render () 
 {
@@ -466,6 +495,7 @@ function levelEnd()
         
     }
 }
+
 
 function actionOnClick()
     {
